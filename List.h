@@ -45,6 +45,8 @@ protected:
 	void copyNode(ListNodePosi(T), int);
 	int clear();
 	ListNodePosi(T) Get_Np(Rank r);
+	void merge(ListNodePosi(T)&, int, List<T>&, ListNodePosi(T), int);    // 有序列表区间归并
+	void mergeSort(ListNodePosi(T)&, int);    // 对从p 开始连续的n 个节点归并排序
 public:
 	List() { init(); }
 	List(List<T> const& L);
@@ -60,19 +62,54 @@ public:
 
 	void insertAsFirst(T const& e);
 	void insertAsLast(T const& e);
+	void insertA(ListNodePosi(T) p, T const& e);
+	void insertB(ListNodePosi(T) p, T const& e);
 
 	T erase(Rank r);
 	void show();
 
 	void unsort();
 	void bubblesort();
+	void insertSort();
+	void mergeSort();
 
 	ListNodePosi(T) find(T const& e, int n, ListNodePosi(T) p);
 	Rank deduplicate();
 	T remove(ListNodePosi(T) p);
 	template<typename VST>
 	void traverse(VST&);
+	ListNodePosi(T) search(T const& e, int n, ListNodePosi(T) p) const;
 };
+
+template<typename T>
+void List<T>::insertSort() {
+	ListNodePosi(T) p = header->succ;
+	for (Rank i = 0; i < _size; i++) {
+		insertA(search(p->data, i, p), p->data);
+		p = p->succ;
+		remove(p->pred);
+	}
+}
+
+template<typename T>
+ListNodePosi(T) List<T>::search(T const& e, int n, ListNodePosi(T) p) const {
+	while (0 <= n--)
+		if ((p = p->pred)->data <= e)
+			break;
+	return p;
+}
+
+template<typename T>
+void List<T>::insertA(ListNodePosi(T) p, T const& e) {
+	_size++;
+	p->insertAsSucc(e);
+}
+
+template<typename T>
+void List<T>::insertB(ListNodePosi(T) p, T const& e) {
+	_size++;
+	p->insertAsPred(e);
+}
 
 template<typename T>
 template<typename VST>
@@ -270,3 +307,41 @@ void List<T>::init() {
 	trailer->succ = nullptr;
 	_size = 0;
 }
+
+
+/*   有bug!!!!!!!
+template <typename T> void List<T>::mergeSort(ListNodePosi(T)& p, int n) {
+	if (n < 2)
+		return;
+	int m = n >> 1;
+	ListNodePosi(T) q = p;
+	for (int i = 0; i < m; i++)
+		q = q->succ;
+	mergeSort(p, m);
+	mergeSort(q, n - m);
+	merge(p, m, *this, q, n - m);
+}
+
+template <typename T> 
+void List<T>::merge(ListNodePosi(T)& p, int n, List<T>& L, ListNodePosi(T) q, int m) {
+	ListNodePosi(T) pp = p->pred;
+	while (0 < m) {
+		if ((0 < n) && (p->data <= q->data)) {
+			if (q == (p = p->succ)) {
+				break;
+			}
+			--n;
+		}
+		else {
+			insertB(p, L.remove((q = q->succ)->pred));
+			--m;
+		};
+	}
+	p = pp->succ;
+}
+
+template <typename T>
+void List<T>::mergeSort() {
+	mergeSort(header->succ, _size);
+}
+*/
