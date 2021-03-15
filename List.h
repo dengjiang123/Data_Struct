@@ -70,7 +70,16 @@ public:
 	ListNodePosi(T) find(T const& e, int n, ListNodePosi(T) p);
 	Rank deduplicate();
 	T remove(ListNodePosi(T) p);
+	template<typename VST>
+	void traverse(VST&);
 };
+
+template<typename T>
+template<typename VST>
+void List<T>::traverse(VST& visit) {
+	for (ListNodePosi(T) p = header->succ; p != trailer; p = p->succ)
+		visit(p->data);
+}
 
 template<typename T>
 Rank List<T>::deduplicate() {
@@ -163,7 +172,7 @@ template<typename T>
 void List<T>::show() {
 	ListNodePosi(T) p = header->succ;
 	Rank r = _size;
-	std::cout << _size << ":\n";
+	std::cout << _size << ":  ";
 	while (r--) {
 		std::cout << p->data << " ";
 		p = p->succ;
