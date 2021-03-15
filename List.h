@@ -66,7 +66,44 @@ public:
 
 	void unsort();
 	void bubblesort();
+
+	ListNodePosi(T) find(T const& e, int n, ListNodePosi(T) p);
+	Rank deduplicate();
+	T remove(ListNodePosi(T) p);
 };
+
+template<typename T>
+Rank List<T>::deduplicate() {
+	if (_size < 2)
+		return 0;
+	int oldsize = _size;
+	Rank r = 0;
+	ListNodePosi(T) p = header;
+	ListNodePosi(T) q;
+	while (trailer != (p = p->succ)) {
+		q = find(p->data, r, p);
+		q ? remove(q) : r++;
+	}
+	return oldsize - _size;
+}
+
+template<typename T>
+T List<T>::remove(ListNodePosi(T) p) {
+	p->pred->succ = p->succ;
+	p->succ->pred = p->pred;
+	T temp = p->data;
+	delete p;
+	_size--;
+	return temp;
+}
+
+template<typename T>
+ListNodePosi(T) List<T>::find(T const& e, int n, ListNodePosi(T) p) {
+	while (0 < n--)
+		if (e == (p = p->pred)->data)
+			return p;
+	return nullptr;
+}
 
 template<typename T>
 void List<T>::bubblesort() {
